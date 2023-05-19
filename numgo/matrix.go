@@ -1,8 +1,8 @@
 package numgo
 
 import (
+	"math"
 	"math/rand"
-	"time"
 )
 
 type Mx struct {
@@ -35,11 +35,15 @@ func (m *Mx) Shape() []int {
 	return s
 }
 
+func boxMuller() float64 {
+	u := rand.Float64()
+	v := rand.Float64()
+	z := math.Sqrt(-2*math.Log(u)) * math.Cos(2*math.Pi*v)
+	return z
+}
+
 // (line, row) > 0 の大きさでmxをランダムに初期化
 func Randn(l, r int) Mx {
-	seed := time.Now().UnixNano()
-	rd := rand.New(rand.NewSource(seed))
-
 	m := make([][]float32, l)
 	for i := 0; i < l; i++ {
 		m[i] = make([]float32, r)
@@ -47,7 +51,7 @@ func Randn(l, r int) Mx {
 
 	for i := 0; i < l; i++ {
 		for j := 0; j < r; j++ {
-			m[i][j] = rd.Float32() + 0.5
+			m[i][j] = float32(boxMuller())
 		}
 	}
 
