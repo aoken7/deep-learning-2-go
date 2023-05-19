@@ -10,8 +10,8 @@ type Sigmoid struct {
 }
 
 func (s *Sigmoid) foward(a numgo.Mx) numgo.Mx {
-	b := numgo.Exp(a)
-	b = numgo.AddScl(b, 1)
+	b := a.Exp()
+	b = numgo.Add(b, numgo.NewMx([][]float32{{1}}))
 	return b
 }
 
