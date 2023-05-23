@@ -63,6 +63,15 @@ func Randn(l, r int) Mx {
 	return NewMx(m)
 }
 
+// (line, row) > 0 の大きさでmxをゼロ初期化
+func ZeroLike(l, r int) Mx {
+	m := make([][]float32, l)
+	for i := 0; i < l; i++ {
+		m[i] = make([]float32, r)
+	}
+	return NewMx(m)
+}
+
 // wの大きさが(1x1)の時は行列とスカラの和になる
 func Add(a Mx, w Mx) Mx {
 	aShape := a.Shape()
@@ -103,4 +112,53 @@ func Dot(a, b Mx) Mx {
 	}
 
 	return NewMx(c)
+}
+
+// 行列のアダマール積
+func Had(a, b Mx) Mx {
+	aShape := a.Shape()
+	bShape := b.Shape()
+
+	if aShape[0] != bShape[0] || aShape[1] != bShape[1] {
+		panic("Matrix shape does not mathc.")
+	}
+
+	c := make([][]float32, aShape[0])
+	for i := 0; i < aShape[0]; i++ {
+		c[i] = make([]float32, aShape[1])
+		for j := 0; j < aShape[1]; j++ {
+			c[i][j] = a.Vec[i][j] * b.Vec[i][j]
+		}
+	}
+
+	return NewMx(c)
+}
+
+// 行列の和をとって2->1次元にする
+func Sum(a Mx, axis int) Mx {
+	aShape := a.Shape()
+
+	if axis < 0 || 1 < axis {
+		panic("'axis' must range from 0 to 1.")
+	}
+
+	b := make([][]float32, 1)
+
+	if axis == 0 {
+		b[0] = make([]float32, aShape[1])
+		for i := 0; i < aShape[0]; i++ {
+			for j := 0; j < aShape[1]; j++ {
+				b[0][j] += a.Vec[i][j]
+			}
+		}
+	} else {
+		b[0] = make([]float32, aShape[0])
+		for i := 0; i < aShape[0]; i++ {
+			for j := 0; j < aShape[1]; j++ {
+				b[0][i] += a.Vec[i][j]
+			}
+		}
+	}
+
+	return NewMx(b)
 }

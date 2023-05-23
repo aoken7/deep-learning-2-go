@@ -33,3 +33,8 @@ func (m *Mx) Sigmoid() Mx {
 		return 1 / (1 + float32(math.Exp(float64(-f))))
 	})
 }
+
+// 行列の一要素に処理 fn を適応させる。applyMxのラップ関数
+func (m *Mx) Apply(fn func(f float32) float32) Mx {
+	return applyMx(m, fn)
+}

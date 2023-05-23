@@ -222,3 +222,84 @@ func TestMx_Shape(t *testing.T) {
 		})
 	}
 }
+
+func TestHad(t *testing.T) {
+	type args struct {
+		a Mx
+		b Mx
+	}
+	tests := []struct {
+		name string
+		args args
+		want Mx
+	}{
+		{
+			name: "(2x2)と(2x2)の行列のアダマール積",
+			args: args{
+				a: NewMx([][]float32{{1, 2}, {3, 4}}),
+				b: NewMx([][]float32{{5, 6}, {7, 8}}),
+			},
+			/*
+				>>> a = np.array([[1,2],[3,4]])
+				>>> b = np.array([[5,6],[7,8]])
+				>>> a * b
+				array([[ 5, 12],
+				       [21, 32]])
+			*/
+			want: NewMx([][]float32{{5, 12}, {21, 32}}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Had(tt.args.a, tt.args.b); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Had() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSum(t *testing.T) {
+	type args struct {
+		a    Mx
+		axis int
+	}
+	tests := []struct {
+		name string
+		args args
+		want Mx
+	}{
+		{
+			name: "(2x3)の行列を行にSum",
+			args: args{
+				a:    NewMx([][]float32{{1, 2, 3}, {2, 3, 4}}),
+				axis: 0,
+			},
+			/*
+				>>> a = np.array([[1,2],[3,4]])
+				>>> np.sum(a, axis=0)
+				array([4, 6])
+			*/
+			want: NewMx([][]float32{{3, 5, 7}}),
+		},
+		{
+			name: "(2x3)の行列を列にSum",
+			args: args{
+				a:    NewMx([][]float32{{1, 2, 3}, {2, 3, 4}}),
+				axis: 1,
+			},
+			/*
+				>>> b = np.array([[1,2,3],[2,3,4]])
+				>>> np.sum(b, axis=1)
+				array([6, 9])
+			*/
+			want: NewMx([][]float32{{6, 9}}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Sum(tt.args.a, tt.args.axis); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Sum() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
