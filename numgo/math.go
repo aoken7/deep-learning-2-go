@@ -4,11 +4,11 @@ import "math"
 
 func applyMx(m *Mx, fn func(float32) float32) Mx {
 	aShape := m.Shape()
-	b := make([][]float32, aShape[1])
+	b := make([][]float32, aShape[0])
 
-	for i := 0; i < aShape[1]; i++ {
-		b[i] = make([]float32, aShape[0])
-		for j := 0; j < aShape[0]; j++ {
+	for i := 0; i < aShape[0]; i++ {
+		b[i] = make([]float32, aShape[1])
+		for j := 0; j < aShape[1]; j++ {
 			b[i][j] = fn(m.Vec[i][j])
 		}
 	}

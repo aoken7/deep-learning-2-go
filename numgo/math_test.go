@@ -33,7 +33,7 @@ func TestMx_sigmoid(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &Mx{
 				Vec: tt.fields.Vec,
-				T:   tt.fields.T,
+				t:   tt.fields.T,
 			}
 			if got := m.Sigmoid(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Mx.sigmoid()\n   = %v, \nwant %v", got, tt.want)

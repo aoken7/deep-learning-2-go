@@ -15,7 +15,7 @@ func printMx(m numgo.Mx) {
 func TestMxT(t *testing.T) {
 	a := numgo.NewMx([][]float32{{1, 2}, {3, 4}, {5, 6}})
 	fmt.Println("origin:", a.Vec)
-	fmt.Println("T:", a.T)
+	fmt.Println("T:", a.T())
 }
 
 func TestDot(t *testing.T) {

@@ -142,7 +142,7 @@ func TestMx_Exp(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &Mx{
 				Vec: tt.fields.Vec,
-				T:   tt.fields.T,
+				t:   tt.fields.T,
 			}
 			if got := m.Exp(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Mx.Exp() = %v, want %v", got, tt.want)
@@ -183,6 +183,41 @@ func TestAdd(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := Add(tt.args.a, tt.args.w); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Add() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMx_Shape(t *testing.T) {
+	type fields struct {
+		Vec [][]float32
+		t   [][]float32
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   []int
+	}{
+		// TODO: Add test cases.
+		{
+			name:   "(1x3)の行列の形状確認",
+			fields: fields{Vec: [][]float32{{1, 2, 3}}},
+			want:   []int{1, 3},
+		},
+		{
+			name:   "(3x2)の行列の形状確認",
+			fields: fields{Vec: [][]float32{{1, 2}, {3, 4}, {5, 6}}},
+			want:   []int{3, 2},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &Mx{
+				Vec: tt.fields.Vec,
+				t:   tt.fields.t,
+			}
+			if got := m.Shape(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Mx.Shape() = %v, want %v", got, tt.want)
 			}
 		})
 	}

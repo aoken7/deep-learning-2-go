@@ -7,7 +7,7 @@ import (
 
 type Mx struct {
 	Vec [][]float32
-	T   [][]float32
+	t   [][]float32
 }
 
 func NewMx(a [][]float32) Mx {
@@ -23,16 +23,21 @@ func NewMx(a [][]float32) Mx {
 			b[i][j] = a[j][i]
 		}
 	}
-	m.T = b
+	m.t = b
 
 	return *m
 }
 
+// [列, 行]で行列の形状を返す
 func (m *Mx) Shape() []int {
 	s := make([]int, 2)
-	s[0] = len(m.Vec[0]) // 行数
-	s[1] = len(m.Vec)    // 列数
+	s[0] = len(m.Vec)    // 行数
+	s[1] = len(m.Vec[0]) // 列数
 	return s
+}
+
+func (m *Mx) T() Mx {
+	return NewMx(m.t)
 }
 
 func boxMuller() float64 {
@@ -61,12 +66,12 @@ func Randn(l, r int) Mx {
 // wの大きさが(1x1)の時は行列とスカラの和になる
 func Add(a Mx, w Mx) Mx {
 	aShape := a.Shape()
-	b := make([][]float32, aShape[1])
+	b := make([][]float32, aShape[0])
 
-	for i := 0; i < aShape[1]; i++ {
-		b[i] = make([]float32, aShape[0])
+	for i := 0; i < aShape[0]; i++ {
+		b[i] = make([]float32, aShape[1])
 
-		for j := 0; j < aShape[0]; j++ {
+		for j := 0; j < aShape[1]; j++ {
 			if len(w.Vec[0]) == 1 {
 				b[i][j] = a.Vec[i][j] + w.Vec[0][0]
 			} else {
@@ -83,15 +88,15 @@ func Dot(a, b Mx) Mx {
 	a_shape := a.Shape()
 	b_shape := b.Shape()
 
-	if a_shape[0] != b_shape[1] {
+	if a_shape[1] != b_shape[0] {
 		panic("Matrix shape does not match.")
 	}
 
-	c := make([][]float32, a_shape[1])
-	for i := 0; i < a_shape[1]; i++ {
-		c[i] = make([]float32, b_shape[0])
-		for j := 0; j < b_shape[0]; j++ {
-			for k := 0; k < a_shape[0]; k++ {
+	c := make([][]float32, a_shape[0])
+	for i := 0; i < a_shape[0]; i++ {
+		c[i] = make([]float32, b_shape[1])
+		for j := 0; j < b_shape[1]; j++ {
+			for k := 0; k < a_shape[1]; k++ {
 				c[i][j] += a.Vec[i][k] * b.Vec[k][j]
 			}
 		}
