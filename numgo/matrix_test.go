@@ -303,3 +303,139 @@ func TestSum(t *testing.T) {
 		})
 	}
 }
+
+func TestMx_Max(t *testing.T) {
+	type fields struct {
+		Vec [][]float32
+		t   [][]float32
+	}
+	type args struct {
+		axis int
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   Mx
+	}{
+		// TODO: Add test cases.
+		{
+			name:   "(2x3)の行列の列方向へのMax",
+			fields: fields{Vec: [][]float32{{1, 5, 3}, {2, 4, 6}}},
+			args:   args{axis: 0},
+			/*
+				>>> a = np.array([[1,5,3],[2,4,6]])
+				>>> a.max(axis=0,keepdims=True)
+				array([[2, 5, 6]])
+			*/
+			want: NewMx([][]float32{{2, 5, 6}}),
+		},
+		{
+			name:   "(2x3)の行列の行方向へのMax",
+			fields: fields{Vec: [][]float32{{1, 5, 3}, {2, 4, 6}}},
+			args:   args{axis: 1},
+			/*
+				>>> a = np.array([[1,5,3],[2,4,6]])
+				>>> a.max(axis=1,keepdims=True)
+				array([[5],
+				       [6]])
+			*/
+			want: NewMx([][]float32{{5}, {6}}),
+		},
+		{
+			name:   "(2x2)の行列の列方向へ負を含むときのMax",
+			fields: fields{Vec: [][]float32{{-2, -4}, {-1, -5}}},
+			args:   args{axis: 0},
+			want:   NewMx([][]float32{{-1, -4}}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &Mx{
+				Vec: tt.fields.Vec,
+				t:   tt.fields.t,
+			}
+			if got := m.Max(tt.args.axis); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Mx.Max() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSub(t *testing.T) {
+	type args struct {
+		a Mx
+		w Mx
+	}
+	tests := []struct {
+		name string
+		args args
+		want Mx
+	}{
+		// TODO: Add test cases.
+		{
+			name: "スカラーと行列のSub",
+			args: args{
+				a: NewMx([][]float32{{1, 2, 3}}),
+				w: NewMx([][]float32{{10}}),
+			},
+			want: NewMx([][]float32{{-9, -8, -7}}),
+		},
+		{
+			name: "行列と行列のSub",
+			args: args{
+				a: NewMx([][]float32{{1, 2, 3}, {4, 5, 6}}),
+				w: NewMx([][]float32{{10, 10, 10}}),
+			},
+			want: NewMx([][]float32{{-9, -8, -7}, {-6, -5, -4}}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Sub(tt.args.a, tt.args.w); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Sub() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestMx_Sum(t *testing.T) {
+	type fields struct {
+		Vec [][]float32
+		t   [][]float32
+	}
+	type args struct {
+		axis int
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   Mx
+	}{
+		// TODO: Add test cases.
+		{
+			name:   "(2x3)の行列の列ごとにSumを計算",
+			fields: fields{Vec: [][]float32{{1, 5, 3}, {2, 4, 6}}},
+			args:   args{axis: 0},
+			want:   NewMx([][]float32{{3, 9, 9}}),
+		},
+		{
+			name:   "(2x3)の行列の行ごとにSumを計算",
+			fields: fields{Vec: [][]float32{{1, 5, 3}, {2, 4, 6}}},
+			args:   args{axis: 1},
+			want:   NewMx([][]float32{{9}, {12}}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &Mx{
+				Vec: tt.fields.Vec,
+				t:   tt.fields.t,
+			}
+			if got := m.Sum(tt.args.axis); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Mx.Sum() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

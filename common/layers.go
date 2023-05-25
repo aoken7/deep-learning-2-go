@@ -109,3 +109,20 @@ func (m *MatMul) Backward(dout numgo.Mx) numgo.Mx {
 func (m *MatMul) GetParams() []numgo.Mx {
 	return m.Params
 }
+
+type SoftMaxWithLoss struct {
+	params []numgo.Mx
+	grads  []numgo.Mx
+	out    numgo.Mx
+}
+
+func (s *SoftMaxWithLoss) Forward(x numgo.Mx) numgo.Mx {
+	return x
+}
+
+func softmax(x numgo.Mx) numgo.Mx {
+	x = numgo.Sub(x, x.Max(1))
+	x = x.Exp()
+	x = numgo.Div(x, x.Sum(1))
+	return x
+}

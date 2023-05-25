@@ -40,6 +40,76 @@ func (m *Mx) T() Mx {
 	return NewMx(m.t)
 }
 
+func (m *Mx) Max(axis int) Mx {
+	mShape := m.Shape()
+
+	a := [][]float32{}
+
+	// 行列の列ごとのMaxを計算
+	if axis == 0 {
+		a = make([][]float32, 1)
+		a[0] = make([]float32, mShape[1])
+		// Maxをとるのでスライスを-infで初期化
+		for k := 0; k < mShape[1]; k++ {
+			a[0][k] = float32(math.Inf(-1))
+		}
+
+		for i := 0; i < mShape[0]; i++ {
+			for j := 0; j < mShape[1]; j++ {
+				if a[0][j] < m.Vec[i][j] {
+					a[0][j] = m.Vec[i][j]
+				}
+			}
+		}
+		// 行列の行ごとのMaxを計算
+	} else if axis == 1 {
+		a = make([][]float32, mShape[0])
+		for i := 0; i < mShape[0]; i++ {
+			a[i] = make([]float32, 1)
+			// Maxをとるのでスライスを-infで初期化
+			a[i][0] = float32(math.Inf(-1))
+
+			for j := 0; j < mShape[1]; j++ {
+				if a[i][0] < m.Vec[i][j] {
+					a[i][0] = m.Vec[i][j]
+				}
+			}
+		}
+	}
+
+	return NewMx(a)
+}
+
+func (m *Mx) Sum(axis int) Mx {
+	mShape := m.Shape()
+
+	a := [][]float32{}
+
+	// 行列の列ごとのSumを計算
+	if axis == 0 {
+		a = make([][]float32, 1)
+		a[0] = make([]float32, mShape[1])
+
+		for i := 0; i < mShape[0]; i++ {
+			for j := 0; j < mShape[1]; j++ {
+				a[0][j] += m.Vec[i][j]
+
+			}
+		}
+		// 行列の行ごとのSumを計算
+	} else if axis == 1 {
+		a = make([][]float32, mShape[0])
+		for i := 0; i < mShape[0]; i++ {
+			a[i] = make([]float32, 1)
+			for j := 0; j < mShape[1]; j++ {
+				a[i][0] += m.Vec[i][j]
+			}
+		}
+	}
+
+	return NewMx(a)
+}
+
 func boxMuller() float64 {
 	u := rand.Float64()
 	v := rand.Float64()
@@ -72,8 +142,8 @@ func ZeroLike(l, r int) Mx {
 	return NewMx(m)
 }
 
-// wの大きさが(1x1)の時は行列とスカラの和になる
-func Add(a Mx, w Mx) Mx {
+// 行列と列が1つの行列もしくはスカラの演算を行う
+func vectorOperation(a, w Mx, fn func(float32, float32) float32) Mx {
 	aShape := a.Shape()
 	b := make([][]float32, aShape[0])
 
@@ -82,14 +152,34 @@ func Add(a Mx, w Mx) Mx {
 
 		for j := 0; j < aShape[1]; j++ {
 			if len(w.Vec[0]) == 1 {
-				b[i][j] = a.Vec[i][j] + w.Vec[0][0]
+				//b[i][j] = a.Vec[i][j] + w.Vec[0][0]
+				b[i][j] = fn(a.Vec[i][j], w.Vec[0][0])
 			} else {
-				b[i][j] = a.Vec[i][j] + w.Vec[0][j]
+				//b[i][j] = a.Vec[i][j] + w.Vec[0][j]
+				b[i][j] = fn(a.Vec[i][j], w.Vec[0][j])
 			}
 		}
 	}
-
 	return NewMx(b)
+}
+
+// wの大きさが(1x1)の時は行列とスカラの和になる
+func Add(a, w Mx) Mx {
+	return vectorOperation(a, w, func(f1, f2 float32) float32 {
+		return f1 + f2
+	})
+}
+
+func Sub(a, w Mx) Mx {
+	return vectorOperation(a, w, func(f1, f2 float32) float32 {
+		return f1 - f2
+	})
+}
+
+func Div(a, w Mx) Mx {
+	return vectorOperation(a, w, func(f1, f2 float32) float32 {
+		return f1 / f2
+	})
 }
 
 // 行列積を計算する。aの行とbの列の大きさを合わせる必要あり。
