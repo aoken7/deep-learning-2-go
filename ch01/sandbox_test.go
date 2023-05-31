@@ -48,10 +48,14 @@ func TestSigmoid(t *testing.T) {
 	w2 := numgo.Randn(4, 3)
 	b2 := numgo.Randn(3, 1)
 
-	h := numgo.Add(numgo.Dot(x, w1), b1)
+	x = numgo.Dot(x, w1)
+	fmt.Println("xShape:", x.Shape())
+	fmt.Println("b1Shape:", b1.Shape())
+	h := numgo.Add(x.T(), b1)
+	h = h.T()
 	a := h.Sigmoid()
-
-	s := numgo.Add(numgo.Dot(a, w2), b2)
+	a = numgo.Dot(a, w2)
+	s := numgo.Add(a.T(), b2)
 
 	printMx(s)
 }

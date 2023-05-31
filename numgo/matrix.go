@@ -145,17 +145,18 @@ func ZeroLike(l, r int) Mx {
 // 行列と列が1つの行列もしくはスカラの演算を行う
 func vectorOperation(a, w Mx, fn func(float32, float32) float32) Mx {
 	aShape := a.Shape()
+	wShape := w.Shape()
 	b := make([][]float32, aShape[0])
 
 	for i := 0; i < aShape[0]; i++ {
 		b[i] = make([]float32, aShape[1])
 
 		for j := 0; j < aShape[1]; j++ {
-			if len(w.Vec[0]) == 1 {
-				//b[i][j] = a.Vec[i][j] + w.Vec[0][0]
+			if wShape[0] == 1 && wShape[1] == 1 {
 				b[i][j] = fn(a.Vec[i][j], w.Vec[0][0])
+			} else if wShape[1] == 1 {
+				b[i][j] = fn(a.Vec[i][j], w.Vec[i][0])
 			} else {
-				//b[i][j] = a.Vec[i][j] + w.Vec[0][j]
 				b[i][j] = fn(a.Vec[i][j], w.Vec[0][j])
 			}
 		}

@@ -1,6 +1,9 @@
 package common
 
-import "numgo/numgo"
+import (
+	"fmt"
+	"numgo/numgo"
+)
 
 type Layer interface {
 	Forward(numgo.Mx) numgo.Mx
@@ -121,6 +124,9 @@ func (s *SoftMaxWithLoss) Forward(x numgo.Mx) numgo.Mx {
 }
 
 func softmax(x numgo.Mx) numgo.Mx {
+	fmt.Println("xShape:", x.Shape())
+	tmp := x.Max(1)
+	fmt.Println("x.MaxShape:", tmp.Shape())
 	x = numgo.Sub(x, x.Max(1))
 	x = x.Exp()
 	x = numgo.Div(x, x.Sum(1))
